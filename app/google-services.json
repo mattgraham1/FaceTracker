@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "724172819443",
+    "firebase_url": "https://facetracker-d59c3.firebaseio.com",
+    "project_id": "facetracker-d59c3",
+    "storage_bucket": "facetracker-d59c3.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:724172819443:android:dc23bf7a752e24123ae086",
+        "android_client_info": {
+          "package_name": "com.graham4.facetracker"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "724172819443-4c2kj2d0i15q9aoitn4m4onhqvfr6937.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB95iLexy_p2mVkTSdkClCwzEuzUJXEdJ0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "724172819443-4c2kj2d0i15q9aoitn4m4onhqvfr6937.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
