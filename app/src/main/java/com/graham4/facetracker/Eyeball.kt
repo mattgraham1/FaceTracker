@@ -15,7 +15,6 @@ class Eyeball(context: Context, attrs: AttributeSet?) : View(context, attrs) {
     var faceY: Float = 0F
 
     fun upDateEyes(imagePoint: FirebaseVisionPoint, imageWidth: Int, imageHeight: Int) {
-        Log.d("Eyeball", "percent x: ${(imagePoint.x/imageWidth)}, y: ${(imagePoint.y/imageHeight)}")
         Log.d("Eyeball", "width: ${this.width}, imageWidth: ${imageWidth}, height: ${this.height}, imageHeight: $imageHeight")
         Log.d("Eyeball" , "scale x: " + (this.width.toFloat() / imageWidth.toFloat()) + ", scale y: " + (this.height.toFloat() / imageHeight.toFloat()))
         val scaleFactorX = this.width.toFloat() / imageWidth.toFloat()
@@ -24,6 +23,20 @@ class Eyeball(context: Context, attrs: AttributeSet?) : View(context, attrs) {
         faceX = imagePoint.x * scaleFactorX
         faceY = imagePoint.y * scaleFactorY
         Log.d("Eyeball", "facex: ${faceX}, facey: ${faceY}")
+
+        // Clip the x / y value so the inner circle doesn't go outside the oval.
+        if (faceX < 100) {
+            faceX = 100F
+        }
+        if (faceX > (this.width - 100)) {
+            faceX = (this.width - 100).toFloat()
+        }
+        if (faceY < 100) {
+            faceY = 100F
+        }
+        if (faceY > (this.height - 100)) {
+            faceY = (this.height - 100).toFloat()
+        }
 
         invalidate()
     }
@@ -43,9 +56,6 @@ class Eyeball(context: Context, attrs: AttributeSet?) : View(context, attrs) {
         canvas?.drawOval(16F, 16F, (width-16).toFloat(), (height-16).toFloat(), paint)
 
         paint.style = Paint.Style.FILL
-
-//        canvas?.drawCircle((width/2).toFloat(), (height/2).toFloat(), 100F, paint)
-//        Log.d("Eyeball", "width/2: " + (width/2) + ", height/2: " + (height/2))
 
         // invert x value so eyeballs will track face on front camera.
         faceX = width - faceX

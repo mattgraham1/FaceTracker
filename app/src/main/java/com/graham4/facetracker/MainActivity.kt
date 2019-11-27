@@ -1,7 +1,5 @@
 package com.graham4.facetracker
 
-import androidx.appcompat.app.AppCompatActivity
-
 import android.Manifest
 import android.content.pm.PackageManager
 import android.graphics.Matrix
@@ -10,9 +8,11 @@ import android.util.Log
 import android.util.Size
 import android.view.Surface
 import android.view.TextureView
+import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.*
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -21,13 +21,12 @@ import com.google.firebase.ml.vision.FirebaseVision
 import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import com.google.firebase.ml.vision.common.FirebaseVisionImageMetadata
 import com.google.firebase.ml.vision.common.FirebaseVisionPoint
-
 import com.google.firebase.ml.vision.face.FirebaseVisionFaceDetectorOptions
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.File
 import java.util.concurrent.Executors
 
-private val REQUEST_CODE_PERMISSIONS = 10
+private const val REQUEST_CODE_PERMISSIONS = 10
 private val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA)
 
 class MainActivity : AppCompatActivity() {
@@ -41,6 +40,10 @@ class MainActivity : AppCompatActivity() {
         viewFinder = findViewById(R.id.view_finder)
         mEyeball1 = viewEye1
         mEyeball2 = viewEye2
+
+        // Uncomment to hide the image of the person in the viewFinder
+//        viewFinder.visibility = View.INVISIBLE
+//        findViewById<ImageButton>(R.id.capture_button).visibility = View.INVISIBLE
 
         // Request camera permissions
         if (allPermissionsGranted()) {
@@ -104,7 +107,7 @@ class MainActivity : AppCompatActivity() {
                                 exc: Throwable?
                         ) {
                             val msg = "Photo capture failed: $message"
-                            Log.e("CameraXApp", msg, exc)
+                            Log.e("MainActivity", msg, exc)
                             viewFinder.post {
                                 Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
                             }
@@ -112,7 +115,6 @@ class MainActivity : AppCompatActivity() {
 
                         override fun onImageSaved(file: File) {
                             val msg = "Photo capture succeeded: ${file.absolutePath}"
-                            Log.d("CameraXApp", msg)
                             viewFinder.post {
                                 Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
                             }
@@ -120,8 +122,7 @@ class MainActivity : AppCompatActivity() {
                     })
         }
 
-
-        // Setup image analysis pipeline that computes average pixel luminance
+        // Setup image analysis pipeline
         val analyzerConfig = ImageAnalysisConfig.Builder().apply {
             // In our analysis, we care more about the latest image than analyzing *every* image
             setLensFacing(CameraX.LensFacing.FRONT)
@@ -216,8 +217,10 @@ class MainActivity : AppCompatActivity() {
 
                 detector.detectInImage(image)
                         .addOnSuccessListener { faces ->
-                            for (face in faces) {
-                                val rightEye = face.getLandmark(Landmark.RIGHT_EYE)
+                            // Only process one face so the eyeballs to don't all over the place.
+                            if (faces.size >= 1) {
+                                val face = faces[0]
+                                val rightEye = face.getLandmark(Landmark.NOSE_BASE)
 
                                 viewFinder
                                 if (rightEye != null) {
@@ -228,7 +231,7 @@ class MainActivity : AppCompatActivity() {
                             }
                         }
                         .addOnFailureListener { e ->
-                            Log.e("CameraXApp", "DetectInImage() failed to add listener.")
+                            Log.e("MainActivity", "DetectInImage() failed to add listener.")
                         }
             }
         }
